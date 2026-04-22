@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Behnke-IT — Daniel Behnke</title>
+<meta name="description" content="Daniel Behnke — Senior Software Developer, Cloud Architect, AI Evangelist. Freelance engineering and SaaS products.">
+<link rel="icon" type="image/svg+xml" href="assets/logo-mark.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>
+// ============ Tweaks (persisted, editable via toolbar) ============
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "accent": "green",
+  "heroStyle": "prism",
+  "motion": "on",
+  "grain": "on"
+}/*EDITMODE-END*/;
+</script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+:root {
+  --bg: #080d16;
+  --bg-subtle: #0d1524;
+  --fg: #eef2ff;
+  --fg-2: #94a3c0;
+  --fg-3: #4e6080;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.14);
+  --glass: rgba(255,255,255,0.03);
+  --glass-2: rgba(255,255,255,0.05);
+
+  /* accent (swapped by Tweaks) */
+  --accent: #00e5ff;
+  --accent-2: #a855f7;
+  --accent-3: #f43f8f;
+  --accent-soft: rgba(0,229,255,0.12);
+  --accent-glow: rgba(0,229,255,0.35);
+}
+:root[data-accent="violet"] {
+  --accent: #a855f7;
+  --accent-2: #00e5ff;
+  --accent-3: #f43f8f;
+  --accent-soft: rgba(168,85,247,0.14);
+  --accent-glow: rgba(168,85,247,0.4);
+}
+:root[data-accent="pink"] {
+  --accent: #f43f8f;
+  --accent-2: #a855f7;
+  --accent-3: #00e5ff;
+  --accent-soft: rgba(244,63,143,0.14);
+  --accent-glow: rgba(244,63,143,0.4);
+}
+:root[data-accent="green"] {
+  --accent: #39ff8e;
+  --accent-2: #00e5ff;
+  --accent-3: #a855f7;
+  --accent-soft: rgba(57,255,142,0.14);
+  --accent-glow: rgba(57,255,142,0.35);
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'DM Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.14); }
+
+::selection { background: var(--accent-soft); color: var(--fg); }
+
+a { color: var(--accent); text-decoration: none; transition: color 150ms ease; }
+a:hover { color: var(--fg); }
+
+/* ============ Atmosphere ============ */
+.bg-atmosphere {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 10%, color-mix(in oklab, var(--accent) 12%, transparent) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 50% at 85% 20%, color-mix(in oklab, var(--accent-2) 14%, transparent) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 50% 90%, color-mix(in oklab, var(--accent-3) 6%, transparent) 0%, transparent 50%);
+}
+.bg-grain {
+  position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0.035;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.8 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+:root[data-grain="off"] .bg-grain { display: none; }
+.page { position: relative; z-index: 2; }
+
+/* ============ Nav ============ */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: 64px; display: flex; align-items: center;
+  padding: 0 32px; gap: 24px;
+  background: rgba(8,13,22,0.65);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo { display: flex; align-items: center; gap: 10px; font-family: 'Space Grotesk',system-ui; font-size: 16px; font-weight: 600; color: var(--fg); letter-spacing: -0.01em; }
+.nav-logo img { transition: transform 400ms var(--ease, cubic-bezier(.16,1,.3,1)); }
+.nav-logo:hover img { transform: rotate(-8deg); }
+.nav-links { display: flex; gap: 2px; margin-left: 16px; }
+.nav-link { padding: 7px 14px; border-radius: 8px; font-size: 14px; color: var(--fg-2); font-weight: 400; transition: all 150ms; }
+.nav-link:hover { color: var(--fg); background: rgba(255,255,255,0.04); }
+.nav-actions { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+
+.lang-toggle {
+  display: flex; align-items: center; gap: 2px;
+  padding: 3px; border-radius: 9999px;
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500;
+}
+.lang-toggle button {
+  background: transparent; border: none; color: var(--fg-3);
+  padding: 4px 10px; border-radius: 9999px; cursor: pointer;
+  font-family: inherit; font-size: inherit; font-weight: inherit;
+  transition: all 150ms; letter-spacing: 0.05em;
+}
+.lang-toggle button.active { background: var(--accent); color: var(--bg); font-weight: 600; }
+.lang-toggle button:not(.active):hover { color: var(--fg); }
+
+.btn-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 16px; border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent; color: var(--fg-2);
+  font-family: 'DM Sans',system-ui; font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all 150ms; text-decoration: none;
+}
+.btn-link:hover { color: var(--fg); border-color: var(--border-strong); background: rgba(255,255,255,0.03); }
+
+/* ============ Buttons ============ */
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 22px; border-radius: 10px; border: none;
+  background: var(--accent); color: var(--bg);
+  font-family: 'DM Sans',system-ui; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: all 200ms cubic-bezier(.16,1,.3,1);
+  text-decoration: none;
+}
+.btn-primary:hover { filter: brightness(1.08); box-shadow: 0 0 28px var(--accent-glow); transform: translateY(-1px); color: var(--bg); }
+.btn-primary:active { transform: translateY(0) scale(0.98); }
+
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 22px; border-radius: 10px;
+  border: 1px solid var(--border);
+  background: transparent; color: var(--fg-2);
+  font-family: 'DM Sans',system-ui; font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: all 150ms;
+  text-decoration: none;
+}
+.btn-ghost:hover { color: var(--fg); border-color: var(--border-strong); background: rgba(255,255,255,0.03); }
+
+/* ============ Layout ============ */
+section { position: relative; padding: 112px 32px 48px; max-width: 1120px; margin: 0 auto; scroll-margin-top: 72px; }
+section + section { padding-top: 48px; }
+
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 500; letter-spacing: 0.16em;
+  color: var(--accent); text-transform: uppercase;
+  margin-bottom: 18px;
+}
+.eyebrow::before {
+  content: ""; width: 24px; height: 1px; background: var(--accent);
+}
+
+h1.hero-title {
+  font-family: 'Space Grotesk', system-ui;
+  font-size: clamp(48px, 7.5vw, 96px);
+  font-weight: 600; line-height: 1.02; letter-spacing: -0.04em;
+  margin-bottom: 28px;
+}
+.grad-text {
+  background: linear-gradient(120deg, var(--accent) 0%, var(--accent-2) 55%, var(--accent-3) 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+h2.section-title {
+  font-family: 'Space Grotesk', system-ui;
+  font-size: clamp(32px, 4.2vw, 48px);
+  font-weight: 600; line-height: 1.08; letter-spacing: -0.03em;
+  color: var(--fg); margin-bottom: 16px;
+}
+.section-sub {
+  font-size: 17px; color: var(--fg-2); line-height: 1.6;
+  max-width: 560px; margin-bottom: 40px;
+}
+
+/* ============ Hero ============ */
+.hero { padding-top: 160px; padding-bottom: 96px; min-height: 92vh; display: flex; flex-direction: column; justify-content: center; }
+.hero-sub { font-size: 20px; line-height: 1.55; color: var(--fg-2); max-width: 640px; margin-bottom: 44px; font-weight: 400; }
+.hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.hero-stats {
+  margin-top: 72px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 24px; padding-top: 40px;
+  border-top: 1px solid var(--border);
+}
+.stat-num { font-family: 'Space Grotesk', system-ui; font-size: 40px; font-weight: 600; color: var(--fg); line-height: 1; letter-spacing: -0.02em; }
+.stat-num .tiny { font-size: 22px; color: var(--accent); }
+.stat-label { font-size: 13px; color: var(--fg-3); margin-top: 8px; letter-spacing: 0.02em; }
+
+/* Prism visual */
+.hero-prism {
+  position: absolute; top: 140px; right: 32px; width: 440px; height: 440px;
+  pointer-events: none; z-index: -1; opacity: 0.9;
+}
+.hero-prism svg { width: 100%; height: 100%; filter: drop-shadow(0 0 40px var(--accent-glow)); }
+:root[data-hero="grid"] .hero-prism { display: none; }
+:root[data-hero="grid"] .hero::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 30%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 30%, transparent 80%);
+  pointer-events: none;
+}
+:root[data-hero="orb"] .hero-prism { display: none; }
+:root[data-hero="orb"] .hero::before {
+  content: "";
+  position: absolute; top: 80px; right: -120px; width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, var(--accent) 0%, transparent 55%),
+              radial-gradient(circle at 70% 60%, var(--accent-2) 0%, transparent 60%);
+  filter: blur(60px); opacity: 0.35;
+  pointer-events: none; z-index: -1;
+}
+
+:root[data-motion="on"] .hero-prism svg { animation: spinSlow 50s linear infinite; }
+@keyframes spinSlow { to { transform: rotate(360deg); } }
+
+/* ============ Cards ============ */
+.card {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px;
+  transition: all 250ms cubic-bezier(.16,1,.3,1);
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: ""; position: absolute; inset: 0;
+  border-radius: inherit; pointer-events: none;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+}
+.card:hover {
+  border-color: color-mix(in oklab, var(--accent) 35%, transparent);
+  background: var(--glass-2);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.4), 0 0 0 1px color-mix(in oklab, var(--accent) 15%, transparent);
+}
+
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+
+.card-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--accent-soft);
+  border: 1px solid color-mix(in oklab, var(--accent) 25%, transparent);
+  margin-bottom: 18px;
+  color: var(--accent);
+}
+.card-title { font-family: 'Space Grotesk', system-ui; font-size: 17px; font-weight: 600; color: var(--fg); margin-bottom: 8px; letter-spacing: -0.01em; }
+.card-desc { font-size: 14px; color: var(--fg-3); line-height: 1.6; }
+
+/* Products */
+.product-card { display: flex; flex-direction: column; gap: 10px; }
+.product-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.product-name { font-family: 'Space Grotesk', system-ui; font-size: 18px; font-weight: 600; color: var(--fg); letter-spacing: -0.01em; }
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 9px; border-radius: 9999px;
+  font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 500;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  background: color-mix(in oklab, var(--accent-2) 14%, transparent);
+  color: var(--accent-2);
+  border: 1px solid color-mix(in oklab, var(--accent-2) 30%, transparent);
+}
+.badge.dot::before {
+  content: ""; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--accent-2); box-shadow: 0 0 8px var(--accent-2);
+}
+:root[data-motion="on"] .badge.dot::before { animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+.product-desc { font-size: 14px; color: var(--fg-2); line-height: 1.6; }
+
+/* About */
+.about-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px; align-items: center; }
+@media (max-width: 820px) { .about-grid { grid-template-columns: 1fr; } }
+.about-text p { font-size: 16px; color: var(--fg-2); line-height: 1.7; margin-bottom: 14px; }
+.about-text p:first-child { color: var(--fg); font-size: 17px; }
+.role-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+.chip {
+  padding: 5px 12px; border-radius: 9999px;
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+  font-size: 12px; font-weight: 500; color: var(--fg-2);
+  font-family: 'JetBrains Mono', monospace; letter-spacing: 0.02em;
+}
+
+.about-card {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  font-family: 'JetBrains Mono', monospace; font-size: 13px;
+  line-height: 1.9;
+}
+.about-card .k { color: var(--fg-3); }
+.about-card .v { color: var(--fg); }
+.about-card .v.accent { color: var(--accent); }
+.about-card .row { display: flex; gap: 24px; padding: 4px 0; border-bottom: 1px dashed rgba(255,255,255,0.05); }
+.about-card .row:last-child { border: none; }
+.about-card .row .k { min-width: 90px; }
+
+/* Projects empty state */
+.empty-state {
+  border: 1px dashed var(--border-strong);
+  border-radius: 16px;
+  padding: 64px 32px;
+  text-align: center;
+  background: linear-gradient(180deg, transparent, rgba(255,255,255,0.02));
+}
+.empty-icon {
+  width: 56px; height: 56px; margin: 0 auto 20px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--accent-soft);
+  border: 1px solid color-mix(in oklab, var(--accent) 25%, transparent);
+  color: var(--accent);
+}
+.empty-title { font-family: 'Space Grotesk', system-ui; font-size: 22px; font-weight: 600; color: var(--fg); margin-bottom: 8px; letter-spacing: -0.01em; }
+.empty-desc { font-size: 14px; color: var(--fg-3); max-width: 440px; margin: 0 auto 24px; line-height: 1.6; }
+
+/* Imprint */
+.imprint-card {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 32px 36px;
+  max-width: 640px;
+}
+.imprint-card h3 {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent);
+  margin-bottom: 12px;
+}
+.imprint-card h3:not(:first-child) { margin-top: 28px; }
+.imprint-card address { font-style: normal; font-size: 15px; line-height: 1.7; color: var(--fg); }
+.imprint-card p { font-size: 14px; color: var(--fg-2); line-height: 1.7; }
+.imprint-card p + p { margin-top: 6px; }
+
+/* Footer */
+footer.page-footer {
+  margin-top: 96px; padding: 40px 32px 48px;
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 16px;
+  max-width: 1120px; margin-left: auto; margin-right: auto;
+}
+.footer-brand { display: flex; align-items: center; gap: 10px; font-family: 'Space Grotesk', system-ui; font-weight: 600; color: var(--fg); }
+.footer-meta { font-size: 12px; color: var(--fg-3); font-family: 'JetBrains Mono', monospace; letter-spacing: 0.04em; }
+
+/* Tweaks panel */
+.tweaks {
+  position: fixed; right: 20px; bottom: 20px; z-index: 500;
+  background: rgba(13, 21, 36, 0.9);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--border-strong);
+  border-radius: 16px; padding: 18px;
+  width: 260px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+  display: none;
+  font-family: 'DM Sans', system-ui;
+}
+.tweaks.open { display: block; }
+.tweaks h4 {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent);
+  margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;
+}
+.tweak-row { margin-bottom: 14px; }
+.tweak-row:last-child { margin-bottom: 0; }
+.tweak-label { font-size: 11px; color: var(--fg-3); font-family: 'JetBrains Mono', monospace; letter-spacing: 0.08em; margin-bottom: 6px; text-transform: uppercase; }
+.tweak-options { display: flex; gap: 4px; }
+.tweak-btn {
+  flex: 1; padding: 7px 8px; border-radius: 7px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+  color: var(--fg-2); cursor: pointer;
+  font-family: inherit; font-size: 11px; font-weight: 500;
+  transition: all 150ms; text-transform: capitalize;
+}
+.tweak-btn:hover { color: var(--fg); border-color: var(--border-strong); }
+.tweak-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 600; }
+.tweak-swatch { display: flex; gap: 6px; }
+.tweak-swatch button {
+  flex: 1; height: 28px; border-radius: 7px; cursor: pointer;
+  border: 1px solid var(--border); transition: all 150ms;
+  position: relative;
+}
+.tweak-swatch button:hover { transform: translateY(-1px); }
+.tweak-swatch button.active { border-color: var(--fg); box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px var(--accent); }
+.tweak-swatch button[data-v="cyan"]   { background: linear-gradient(135deg, #00e5ff, #38ebff); }
+.tweak-swatch button[data-v="violet"] { background: linear-gradient(135deg, #a855f7, #b085ff); }
+.tweak-swatch button[data-v="pink"]   { background: linear-gradient(135deg, #f43f8f, #ff73c5); }
+.tweak-swatch button[data-v="green"]  { background: linear-gradient(135deg, #39ff8e, #8affc0); }
+
+/* Reveal animation */
+:root[data-motion="on"] .reveal {
+  opacity: 0; transform: translateY(12px);
+  transition: opacity 500ms ease, transform 500ms cubic-bezier(.16,1,.3,1);
+}
+:root[data-motion="on"] .reveal.in { opacity: 1; transform: none; }
+
+@media (max-width: 720px) {
+  .nav { padding: 0 16px; gap: 12px; }
+  .nav-links { display: none; }
+  section { padding: 96px 20px 32px; }
+  .hero { padding-top: 132px; }
+  .hero-prism { opacity: 0.35; right: -100px; top: 40px; width: 340px; height: 340px; }
+  h1.hero-title { font-size: clamp(40px, 10vw, 64px); }
+}
+
+/* Locale visibility */
+[data-i18n-en], [data-i18n-de] { display: none; }
+:root[data-lang="en"] [data-i18n-en] { display: inline; }
+:root[data-lang="de"] [data-i18n-de] { display: inline; }
+:root[data-lang="en"] .block-en { display: block; }
+:root[data-lang="de"] .block-de { display: block; }
+.block-en, .block-de { display: none; }
+</style>
+</head>
+<body>
+<div class="bg-atmosphere"></div>
+<div class="bg-grain"></div>
+<div class="page">
+
+<!-- ============ Nav ============ -->
+<nav class="nav">
+  <a href="#top" class="nav-logo">
+    <img src="assets/logo-mark.svg" width="26" height="26" alt="Behnke-IT">
+    Behnke-IT
+  </a>
+  <div class="nav-links">
+    <a href="#about"    class="nav-link"><span data-i18n-en>About</span><span data-i18n-de>Über</span></a>
+    <a href="#services" class="nav-link"><span data-i18n-en>Services</span><span data-i18n-de>Leistungen</span></a>
+    <a href="#products" class="nav-link"><span data-i18n-en>Products</span><span data-i18n-de>Produkte</span></a>
+    <a href="#projects" class="nav-link"><span data-i18n-en>Projects</span><span data-i18n-de>Projekte</span></a>
+    <a href="#imprint"  class="nav-link"><span data-i18n-en>Imprint</span><span data-i18n-de>Impressum</span></a>
+  </div>
+  <div class="nav-actions">
+    <div class="lang-toggle" role="tablist" aria-label="Language">
+      <button data-lang="en" class="active">EN</button>
+      <button data-lang="de">DE</button>
+    </div>
+    <a href="mailto:hello@behnke-it.com" class="btn-link">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      <span data-i18n-en>Get in touch</span>
+      <span data-i18n-de>Kontakt</span>
+    </a>
+  </div>
+</nav>
+
+<!-- ============ Hero ============ -->
+<section class="hero" id="top">
+  <div class="hero-prism" aria-hidden="true">
+    <svg viewBox="0 0 400 400" fill="none">
+      <defs>
+        <linearGradient id="prismStroke" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="var(--accent)"/>
+          <stop offset="100%" stop-color="var(--accent-2)"/>
+        </linearGradient>
+        <radialGradient id="prismFill" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.08"/>
+          <stop offset="100%" stop-color="var(--accent-2)" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <!-- Outer triangle -->
+      <polygon points="200,40 360,320 40,320" fill="url(#prismFill)" stroke="url(#prismStroke)" stroke-width="1.2" stroke-linejoin="round"/>
+      <!-- Inner triangle -->
+      <polygon points="200,110 310,300 90,300" fill="none" stroke="url(#prismStroke)" stroke-width="0.8" stroke-linejoin="round" opacity="0.5"/>
+      <!-- Innermost -->
+      <polygon points="200,180 260,280 140,280" fill="none" stroke="url(#prismStroke)" stroke-width="0.6" stroke-linejoin="round" opacity="0.35"/>
+      <!-- Rays out from apex -->
+      <line x1="200" y1="40" x2="200" y2="0"  stroke="var(--accent)"   stroke-width="1.2" opacity="0.7"/>
+      <line x1="200" y1="40" x2="240" y2="10" stroke="var(--accent-2)" stroke-width="1"   opacity="0.55"/>
+      <line x1="200" y1="40" x2="160" y2="10" stroke="var(--accent-3)" stroke-width="1"   opacity="0.45"/>
+      <!-- Rays from right vertex -->
+      <line x1="360" y1="320" x2="400" y2="310" stroke="var(--accent)"   stroke-width="1.2" opacity="0.7"/>
+      <line x1="360" y1="320" x2="395" y2="340" stroke="var(--accent-2)" stroke-width="0.9" opacity="0.5"/>
+      <line x1="360" y1="320" x2="385" y2="360" stroke="var(--accent-3)" stroke-width="0.8" opacity="0.4"/>
+      <!-- Rays from left vertex -->
+      <line x1="40"  y1="320" x2="0"   y2="310" stroke="var(--accent)"   stroke-width="1.2" opacity="0.7"/>
+      <line x1="40"  y1="320" x2="5"   y2="340" stroke="var(--accent-2)" stroke-width="0.9" opacity="0.5"/>
+      <line x1="40"  y1="320" x2="15"  y2="360" stroke="var(--accent-3)" stroke-width="0.8" opacity="0.4"/>
+      <!-- Apex dot -->
+      <circle cx="200" cy="40" r="3" fill="var(--accent)"/>
+    </svg>
+  </div>
+
+  <div class="eyebrow"><span data-i18n-en>Freelance engineering · Hamburg</span><span data-i18n-de>Freelance Engineering · Hamburg</span></div>
+
+  <h1 class="hero-title">
+    <span data-i18n-en>Software that<br><span class="grad-text">ships with intent.</span></span>
+    <span data-i18n-de>Software mit<br><span class="grad-text">klarer Absicht.</span></span>
+  </h1>
+
+  <p class="hero-sub">
+    <span data-i18n-en>I'm Daniel Behnke — a senior software developer, cloud architect, and AI evangelist. I design, build, and ship production systems, and I'm incubating a handful of SaaS products on the side.</span>
+    <span data-i18n-de>Ich bin Daniel Behnke — Senior Software Developer, Cloud-Architekt und KI-Evangelist. Ich entwerfe, baue und betreibe produktive Systeme — und arbeite nebenbei an einer Handvoll eigener SaaS-Produkte.</span>
+  </p>
+
+  <div class="hero-actions">
+    <a href="#services" class="btn-primary">
+      <span data-i18n-en>See what I do</span><span data-i18n-de>Leistungen ansehen</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+    </a>
+    <a href="mailto:hello@behnke-it.com" class="btn-ghost">
+      <span data-i18n-en>Start a conversation</span><span data-i18n-de>Gespräch starten</span>
+    </a>
+  </div>
+
+  <div class="hero-stats">
+    <div>
+      <div class="stat-num">14<span class="tiny">+</span></div>
+      <div class="stat-label"><span data-i18n-en>Years building software</span><span data-i18n-de>Jahre Softwareentwicklung</span></div>
+    </div>
+    <div>
+      <div class="stat-num">6</div>
+      <div class="stat-label"><span data-i18n-en>SaaS products in flight</span><span data-i18n-de>SaaS-Produkte in Arbeit</span></div>
+    </div>
+    <div>
+      <div class="stat-num">B.Sc.</div>
+      <div class="stat-label"><span data-i18n-en>Applied Information Technology</span><span data-i18n-de>Angewandte Informatik</span></div>
+    </div>
+    <div>
+      <div class="stat-num">HH</div>
+      <div class="stat-label"><span data-i18n-en>Based near Hamburg, Germany</span><span data-i18n-de>Raum Hamburg, Deutschland</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ About ============ -->
+<section id="about" class="reveal">
+  <div class="eyebrow">01 · <span data-i18n-en>About</span><span data-i18n-de>Über mich</span></div>
+  <h2 class="section-title"><span data-i18n-en>Senior engineer. Cloud architect. AI-curious.</span><span data-i18n-de>Senior Engineer. Cloud-Architekt. KI-begeistert.</span></h2>
+  <div class="about-grid">
+    <div class="about-text">
+      <div class="block-en">
+        <p>Fourteen-plus years of shipping production software across the stack — from tight-loop backend services and cloud infrastructure to the pragmatic frontends that sit on top of them.</p>
+        <p>Currently working at <a href="https://doinstruct.com" target="_blank" rel="noopener">doinstruct</a>. In parallel I take on selected freelance work and incubate a small portfolio of SaaS ideas under the Behnke-IT umbrella.</p>
+        <p>I like systems that are simple where they can be and rigorous where they must be, and I'm unreasonably interested in how AI is reshaping the craft of software.</p>
+      </div>
+      <div class="block-de">
+        <p>Mehr als vierzehn Jahre produktive Softwareentwicklung über den gesamten Stack hinweg — von Backend-Services und Cloud-Infrastruktur bis zu den pragmatischen Frontends, die darauf aufsetzen.</p>
+        <p>Aktuell angestellt bei <a href="https://doinstruct.com" target="_blank" rel="noopener">doinstruct</a>. Daneben nehme ich ausgewählte Freelance-Projekte an und entwickle ein kleines Portfolio an SaaS-Ideen unter dem Dach Behnke-IT.</p>
+        <p>Ich mag Systeme, die einfach sind wo sie es sein können, und rigoros wo sie es sein müssen — und beschäftige mich intensiv damit, wie KI das Handwerk der Softwareentwicklung verändert.</p>
+      </div>
+      <div class="role-chips">
+        <span class="chip">Senior Dev</span>
+        <span class="chip">Cloud Architect</span>
+        <span class="chip">AI Evangelist</span>
+      </div>
+    </div>
+    <div class="about-card">
+      <div class="row"><span class="k">role</span><span class="v">Senior Software Developer</span></div>
+      <div class="row"><span class="k">focus</span><span class="v">Cloud · AI · SaaS</span></div>
+      <div class="row"><span class="k">years</span><span class="v accent">14+</span></div>
+      <div class="row"><span class="k">degree</span><span class="v">B.Sc. Applied IT</span></div>
+      <div class="row"><span class="k">based</span><span class="v">near Hamburg, DE</span></div>
+      <div class="row"><span class="k">status</span><span class="v accent"><span data-i18n-en>Open for select projects</span><span data-i18n-de>Offen für ausgewählte Projekte</span></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Services ============ -->
+<section id="services" class="reveal">
+  <div class="eyebrow">02 · <span data-i18n-en>Services</span><span data-i18n-de>Leistungen</span></div>
+  <h2 class="section-title"><span data-i18n-en>What I do, end to end.</span><span data-i18n-de>Was ich mache — Ende zu Ende.</span></h2>
+  <p class="section-sub"><span data-i18n-en>Freelance engagements across engineering, architecture, and AI integration. Selective bookings; serious about what I take on.</span><span data-i18n-de>Freelance-Engagements in Engineering, Architektur und KI-Integration. Ausgewählte Projekte, mit Anspruch.</span></p>
+
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      </div>
+      <div class="card-title"><span data-i18n-en>Software development</span><span data-i18n-de>Softwareentwicklung</span></div>
+      <div class="card-desc"><span data-i18n-en>Full-stack engineering across TypeScript, Node, React, and the Python / Java adjacencies. Greenfield builds and careful surgery on what you already have.</span><span data-i18n-de>Fullstack-Engineering in TypeScript, Node, React und den Python-/Java-Ökosystemen drumherum. Greenfield-Projekte und sorgfältige Eingriffe in bestehende Systeme.</span></div>
+    </div>
+    <div class="card">
+      <div class="card-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a4.5 4.5 0 1 0-1.34-8.8 7 7 0 1 0-13.08 3.3"/><path d="M12 12v9"/><path d="m8 17 4 4 4-4"/></svg>
+      </div>
+      <div class="card-title"><span data-i18n-en>Cloud architecture</span><span data-i18n-de>Cloud-Architektur</span></div>
+      <div class="card-desc"><span data-i18n-en>AWS and GCP designs that are boring on purpose — cost-aware, observable, and possible to hand over. IaC, CI/CD, and the unglamorous plumbing that keeps prod calm.</span><span data-i18n-de>AWS- und GCP-Designs, die bewusst langweilig sind — kostenbewusst, beobachtbar und übergabefähig. IaC, CI/CD und die unscheinbare Plumbing-Arbeit, die Produktion ruhig hält.</span></div>
+    </div>
+    <div class="card">
+      <div class="card-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 0 0-4 4v2a4 4 0 1 0 8 0V6a4 4 0 0 0-4-4z"/><path d="M7 22v-7"/><path d="M17 22v-7"/><path d="M5 15h14"/></svg>
+      </div>
+      <div class="card-title"><span data-i18n-en>AI integration</span><span data-i18n-de>KI-Integration</span></div>
+      <div class="card-desc"><span data-i18n-en>LLM features that ship — agent workflows, RAG pipelines, eval harnesses, and the judgment to know when a prompt isn't the right answer.</span><span data-i18n-de>LLM-Features, die wirklich live gehen — Agent-Workflows, RAG-Pipelines, Eval-Setups und das Urteilsvermögen zu erkennen, wann ein Prompt <em>nicht</em> die Lösung ist.</span></div>
+    </div>
+    <div class="card">
+      <div class="card-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      </div>
+      <div class="card-title"><span data-i18n-en>Technical consulting</span><span data-i18n-de>Technisches Consulting</span></div>
+      <div class="card-desc"><span data-i18n-en>Architecture reviews, hiring calibration, scoping sessions, and second-opinion work for teams about to make expensive decisions.</span><span data-i18n-de>Architektur-Reviews, Hiring-Kalibrierung, Scoping-Sessions und Zweitmeinungen für Teams vor teuren Entscheidungen.</span></div>
+    </div>
+    <div class="card">
+      <div class="card-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <div class="card-title"><span data-i18n-en>AI enablement</span><span data-i18n-de>KI-Enablement</span></div>
+      <div class="card-desc"><span data-i18n-en>Workshops and hands-on coaching to bring engineering teams from "we should probably try AI" to a working internal practice.</span><span data-i18n-de>Workshops und Hands-on-Coaching, die Engineering-Teams von „wir sollten wohl mal KI ausprobieren" zu einer echten internen Praxis bringen.</span></div>
+    </div>
+    <div class="card">
+      <div class="card-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 1 1 3 3L7 19l-4 1 1-4Z"/></svg>
+      </div>
+      <div class="card-title"><span data-i18n-en>Product engineering</span><span data-i18n-de>Produkt-Engineering</span></div>
+      <div class="card-desc"><span data-i18n-en>From napkin sketch to v1: scoping, prototyping, and shipping SaaS features when a founder needs an engineer who thinks like a product owner.</span><span data-i18n-de>Von der Serviette zu v1: Scoping, Prototyping und Shipping von SaaS-Features — wenn ein Gründer einen Engineer mit Produktblick braucht.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Products ============ -->
+<section id="products" class="reveal">
+  <div class="eyebrow">03 · <span data-i18n-en>Products</span><span data-i18n-de>Produkte</span></div>
+  <h2 class="section-title"><span data-i18n-en>SaaS ideas, in the workshop.</span><span data-i18n-de>SaaS-Ideen in Arbeit.</span></h2>
+  <p class="section-sub"><span data-i18n-en>A small portfolio of SaaS products in active development. If any of these solves a problem you have, say hi — early-access seats are often available.</span><span data-i18n-de>Ein kleines Portfolio an SaaS-Produkten in aktiver Entwicklung. Falls eines davon ein Problem bei dir löst, schreib mir — Early-Access-Plätze sind oft verfügbar.</span></p>
+
+  <div class="grid-2">
+    <div class="card product-card">
+      <div class="product-head">
+        <div class="product-name">AccessKit</div>
+        <span class="badge dot"><span data-i18n-en>In development</span><span data-i18n-de>In Entwicklung</span></span>
+      </div>
+      <div class="product-desc"><span data-i18n-en>Access management, without the enterprise rituals. Built for small teams that need SSO, roles, and audit trails without buying a platform.</span><span data-i18n-de>Zugriffsverwaltung — ohne Enterprise-Rituale. Für kleine Teams, die SSO, Rollen und Audit-Trails brauchen, ohne dafür eine Plattform zu kaufen.</span></div>
+    </div>
+    <div class="card product-card">
+      <div class="product-head">
+        <div class="product-name">Acked</div>
+        <span class="badge dot"><span data-i18n-en>In development</span><span data-i18n-de>In Entwicklung</span></span>
+      </div>
+      <div class="product-desc"><span data-i18n-en>Acknowledgement and sign-off workflows for teams that need receipts — policies, training, changes read and confirmed, with a paper trail.</span><span data-i18n-de>Bestätigungs- und Freigabe-Workflows für Teams, die Nachweise brauchen — Richtlinien, Schulungen, Änderungen gelesen und bestätigt, revisionssicher.</span></div>
+    </div>
+    <div class="card product-card">
+      <div class="product-head">
+        <div class="product-name">Print Quote Hub</div>
+        <span class="badge dot"><span data-i18n-en>In development</span><span data-i18n-de>In Entwicklung</span></span>
+      </div>
+      <div class="product-desc"><span data-i18n-en>A quoting layer for print shops and their clients. Standardized specs in, comparable offers out, and no more PDF ping-pong.</span><span data-i18n-de>Eine Angebots-Schicht für Druckereien und ihre Kunden. Standardisierte Spezifikationen rein, vergleichbare Angebote raus — Schluss mit PDF-Pingpong.</span></div>
+    </div>
+    <div class="card product-card">
+      <div class="product-head">
+        <div class="product-name">Uniwatch AI Guard</div>
+        <span class="badge dot"><span data-i18n-en>In development</span><span data-i18n-de>In Entwicklung</span></span>
+      </div>
+      <div class="product-desc"><span data-i18n-en>An AI-powered layer for watching the things that matter — uptime, drift, cost, safety — and escalating with context instead of noise.</span><span data-i18n-de>Eine KI-gestützte Beobachtungsschicht für das, was zählt — Uptime, Drift, Kosten, Sicherheit — mit Eskalation im Kontext statt Alarm-Rauschen.</span></div>
+    </div>
+    <div class="card product-card">
+      <div class="product-head">
+        <div class="product-name">Unborder</div>
+        <span class="badge dot"><span data-i18n-en>In development</span><span data-i18n-de>In Entwicklung</span></span>
+      </div>
+      <div class="product-desc"><span data-i18n-en>Cross-border operational glue for teams working across jurisdictions — payments, compliance, and the gnarly bits in between.</span><span data-i18n-de>Operative Verbindungen über Ländergrenzen hinweg — Zahlungen, Compliance und die kniffligen Teile dazwischen.</span></div>
+    </div>
+    <div class="card product-card">
+      <div class="product-head">
+        <div class="product-name">Undanger</div>
+        <span class="badge dot"><span data-i18n-en>In development</span><span data-i18n-de>In Entwicklung</span></span>
+      </div>
+      <div class="product-desc"><span data-i18n-en>Risk and safety signals for operational teams. Small inputs, early warnings, and a UI that respects the people on call.</span><span data-i18n-de>Risiko- und Sicherheitssignale für operative Teams. Kleine Inputs, frühe Warnungen — und ein UI, das die Menschen im Bereitschaftsdienst respektiert.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Projects (empty) ============ -->
+<section id="projects" class="reveal">
+  <div class="eyebrow">04 · <span data-i18n-en>Projects</span><span data-i18n-de>Projekte</span></div>
+  <h2 class="section-title"><span data-i18n-en>Selected work.</span><span data-i18n-de>Ausgewählte Arbeiten.</span></h2>
+
+  <div class="empty-state">
+    <div class="empty-icon">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18"/><path d="M6 7v13a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7"/><path d="M9 7V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v3"/></svg>
+    </div>
+    <div class="empty-title"><span data-i18n-en>Case studies coming soon.</span><span data-i18n-de>Case Studies folgen in Kürze.</span></div>
+    <div class="empty-desc"><span data-i18n-en>Most of my client work is under NDA, and the SaaS products above are still shaping up. I'll publish selected write-ups here once they're ready to show.</span><span data-i18n-de>Die meiste Kundenarbeit unterliegt NDAs, und die SaaS-Produkte oben sind noch in der Entstehung. Ausgewählte Write-ups folgen hier, sobald sie zeigbar sind.</span></div>
+    <a href="mailto:hello@behnke-it.com" class="btn-ghost">
+      <span data-i18n-en>Ask about references</span><span data-i18n-de>Nach Referenzen fragen</span>
+    </a>
+  </div>
+</section>
+
+<!-- ============ Imprint ============ -->
+<section id="imprint" class="reveal">
+  <div class="eyebrow">05 · <span data-i18n-en>Imprint</span><span data-i18n-de>Impressum</span></div>
+  <h2 class="section-title"><span data-i18n-en>Imprint</span><span data-i18n-de>Impressum</span></h2>
+  <p class="section-sub"><span data-i18n-en>Required disclosures under §5 TMG.</span><span data-i18n-de>Angaben gemäß §5 TMG.</span></p>
+
+  <div class="imprint-card">
+    <h3><span data-i18n-en>Responsible party</span><span data-i18n-de>Diensteanbieter</span></h3>
+    <address>
+      Daniel Behnke<br>
+      c/o Block Services<br>
+      Stuttgarter Str. 106<br>
+      70736 Fellbach<br>
+      <span data-i18n-en>Germany</span><span data-i18n-de>Deutschland</span>
+    </address>
+
+    <h3><span data-i18n-en>Contact</span><span data-i18n-de>Kontakt</span></h3>
+    <p><span data-i18n-en>Email</span><span data-i18n-de>E-Mail</span>: <a href="mailto:hello@behnke-it.com">hello@behnke-it.com</a></p>
+    <p>LinkedIn: <a href="https://www.linkedin.com/in/dtbehnke/" target="_blank" rel="noopener">linkedin.com/in/dtbehnke</a></p>
+
+    <h3><span data-i18n-en>Content responsibility</span><span data-i18n-de>Verantwortlich für den Inhalt</span></h3>
+    <p><span data-i18n-en>Responsible for editorial content according to §18 Abs. 2 MStV: Daniel Behnke (address as above).</span><span data-i18n-de>Verantwortlich für den Inhalt nach §18 Abs. 2 MStV: Daniel Behnke (Anschrift wie oben).</span></p>
+
+    <h3><span data-i18n-en>Disclaimer</span><span data-i18n-de>Haftungsausschluss</span></h3>
+    <p><span data-i18n-en>Contents of this website have been created with the greatest possible care. No liability is assumed for the correctness, completeness, or timeliness of the content. Liability for the content of external links rests solely with the respective operators.</span><span data-i18n-de>Die Inhalte dieser Website wurden mit größtmöglicher Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte wird jedoch keine Gewähr übernommen. Die Haftung für Inhalte externer Links liegt ausschließlich bei deren Betreibern.</span></p>
+  </div>
+</section>
+
+<footer class="page-footer">
+  <div class="footer-brand">
+    <img src="assets/logo-mark.svg" width="20" height="20" alt="">
+    Behnke-IT
+  </div>
+  <div class="footer-meta">
+    © 2026 Daniel Behnke · <a href="#imprint"><span data-i18n-en>Imprint</span><span data-i18n-de>Impressum</span></a>
+  </div>
+</footer>
+
+</div><!-- /.page -->
+
+<!-- ============ Tweaks panel (host-toggled) ============ -->
+<div class="tweaks" id="tweaks" aria-hidden="true">
+  <h4>Tweaks</h4>
+  <div class="tweak-row">
+    <div class="tweak-label">Accent</div>
+    <div class="tweak-swatch" data-key="accent">
+      <button data-v="cyan"   title="Cyan"></button>
+      <button data-v="violet" title="Violet"></button>
+      <button data-v="pink"   title="Pink"></button>
+      <button data-v="green"  title="Green"></button>
+    </div>
+  </div>
+  <div class="tweak-row">
+    <div class="tweak-label">Hero</div>
+    <div class="tweak-options" data-key="heroStyle">
+      <button class="tweak-btn" data-v="prism">Prism</button>
+      <button class="tweak-btn" data-v="grid">Grid</button>
+      <button class="tweak-btn" data-v="orb">Orb</button>
+    </div>
+  </div>
+  <div class="tweak-row">
+    <div class="tweak-label">Motion</div>
+    <div class="tweak-options" data-key="motion">
+      <button class="tweak-btn" data-v="on">On</button>
+      <button class="tweak-btn" data-v="off">Off</button>
+    </div>
+  </div>
+  <div class="tweak-row">
+    <div class="tweak-label">Grain</div>
+    <div class="tweak-options" data-key="grain">
+      <button class="tweak-btn" data-v="on">On</button>
+      <button class="tweak-btn" data-v="off">Off</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ Apply tweaks to :root ============
+const root = document.documentElement;
+function applyTweaks(t) {
+  root.setAttribute('data-accent', t.accent);
+  root.setAttribute('data-hero',   t.heroStyle);
+  root.setAttribute('data-motion', t.motion);
+  root.setAttribute('data-grain',  t.grain);
+}
+// initial apply
+let currentTweaks = { ...TWEAK_DEFAULTS };
+applyTweaks(currentTweaks);
+
+// ============ Language toggle ============
+const savedLang = localStorage.getItem('behnke_lang') || 'en';
+root.setAttribute('data-lang', savedLang);
+document.querySelectorAll('.lang-toggle button').forEach(btn => {
+  btn.classList.toggle('active', btn.dataset.lang === savedLang);
+  btn.addEventListener('click', () => {
+    const lang = btn.dataset.lang;
+    root.setAttribute('data-lang', lang);
+    document.documentElement.lang = lang;
+    localStorage.setItem('behnke_lang', lang);
+    document.querySelectorAll('.lang-toggle button').forEach(b => b.classList.toggle('active', b === btn));
+  });
+});
+
+// ============ Tweaks panel wiring ============
+const panel = document.getElementById('tweaks');
+
+function syncPanelActive() {
+  panel.querySelectorAll('[data-key]').forEach(group => {
+    const key = group.dataset.key;
+    group.querySelectorAll('button').forEach(b => {
+      b.classList.toggle('active', b.dataset.v === currentTweaks[key]);
+    });
+  });
+}
+syncPanelActive();
+
+panel.querySelectorAll('[data-key]').forEach(group => {
+  const key = group.dataset.key;
+  group.querySelectorAll('button').forEach(b => {
+    b.addEventListener('click', () => {
+      currentTweaks = { ...currentTweaks, [key]: b.dataset.v };
+      applyTweaks(currentTweaks);
+      syncPanelActive();
+      try {
+        window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { [key]: b.dataset.v } }, '*');
+      } catch (e) {}
+    });
+  });
+});
+
+// ============ Edit-mode host protocol ============
+window.addEventListener('message', (e) => {
+  const d = e.data;
+  if (!d || typeof d !== 'object') return;
+  if (d.type === '__activate_edit_mode')   panel.classList.add('open');
+  if (d.type === '__deactivate_edit_mode') panel.classList.remove('open');
+});
+try { window.parent.postMessage({ type: '__edit_mode_available' }, '*'); } catch (e) {}
+
+// ============ Reveal on scroll ============
+if ('IntersectionObserver' in window) {
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { rootMargin: '0px 0px -10% 0px', threshold: 0.05 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+}
+</script>
+</body>
+</html>
